@@ -1,0 +1,40 @@
+<!-- @author Heidi Cho, Midori Yang
+CS 304 Homework 6: Ajax
+4.4.18
+base.html
+
+Base html template for the web application -->
+
+<!doctype HTML>
+<head>
+	<meta charset="utf-8">
+	<title>CS304 hwk6</title>
+	<link rel="stylesheet" type="text/css"
+          href="/static/styling.css">
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+	<ul>
+		<li><a href="{{url_for('process')}}">Home</a></li>
+		<li><a href="{{url_for('login')}}">Login</a></li>
+		<li><a href="{{url_for('order')}}">Order</a></li>
+	</ul>
+
+	<!-- Name of page goes here -->
+	<h1>{{title}}</h1>
+
+	<!-- Error messages will be flashed here -->
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul>
+				{% for message in messages %}
+				<li> {{ message }} </li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+
+	<!-- Child templates will fill this in -->
+	{% block content %}{% endblock %}
+
+</body>

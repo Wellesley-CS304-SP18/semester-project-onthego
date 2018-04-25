@@ -1,0 +1,98 @@
+<!-- @author Heidi Cho, Midori Yang
+CS 304 Homework 6: Ajax
+4.4.18
+rateMovies.html
+
+Html template for the rateMovies page -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <p><button id="progressive_enhancement">Turn On Progressive Enhancement</button></p>
+  <p>Logged in as <strong>{{userid}}</strong></p>
+  <style scoped>
+    .selected { font-weight: bold; }
+    table {
+            border-collapse: collapse;
+    }
+    tr {
+        border: 2px solid teal;
+        padding: 2ex;
+    }
+    form {
+       display: inline-block;
+       border: 1px solid teal;
+       padding: 1ex;
+       border-radius: 2ex;
+    }
+    [type=submit] {
+         font-size: 1em;
+         font-weight: normal;
+    }
+    [type=text] {
+      width:15px;
+    }
+  </style>
+  <table id="menu_list">
+      <tr><th>Item Name (Price)</th><th>Description</th><th>Quantity</th></tr>
+      {% for item in menu %}
+      <tr class="menu_row">
+          <td>{{item['name']}} (${{item['price']}})</td>
+          <td class="rating" id = "{{item['mid']}}">{{item['description']}}</td>
+          <td>
+            <form data-mid=1 action="{{url_for('order')}}" method=post>
+              <input type="hidden" name="menu_mid" value="{{item['mid']}}">
+              <input type="text" name="item-quantity" value="0">
+              <input type="submit" name="submit-btn" value="Add to Cart">
+            </form>
+          </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+
+  <!-- <script>
+
+    // update the rating in the html
+    function updateRating(data){
+      tt = data['tt'];
+      rating = data['avgrating'];
+      $('#' + tt + '.rating').html(rating);
+    }
+
+    var progressive_on = false;
+    $("#progressive_enhancement")
+    .on('click',
+        function toggleProgessiveEnhancement() {
+            if( progressive_on ) { // if it's on
+                $("input[name=stars],input[type=submit]").show(); // show submit btn
+                $("#progressive_enhancement")
+                    .text("Turn on Progressive Enhancement");
+                $("label").off(); // turn off the event handler for submitting ajax
+                $("label").css("font-weight","normal");
+
+                // turn it off
+                progressive_on = false;
+            } else {
+                $("input[name=stars],input[type=submit]").hide();
+                $("#progressive_enhancement")
+                     .text("Turn off Progressive Enhancement");
+
+                // function to send user's selection via ajax
+                $("label").click(function(){
+                  $(this).parent().children().css("font-weight","normal");
+                  $(this).css("font-weight","bold"); // bold the user's rating
+                  formData = $(this).parent().serialize(), // serialize the rating and tt
+                  $.post("/setRatingAjax/", // post to setRatingAjax
+                  formData,
+                  updateRating, // update the html to reflect new rating
+                  "json");
+                });
+
+                // turn it on
+                progressive_on = true;
+            }
+        });
+
+  </script>-->
+{% endblock %}

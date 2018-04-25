@@ -1,0 +1,38 @@
+H1 {
+    color: teal;
+    font-size: 200%;
+}
+
+#flashes {
+    color: red;
+    font-size: large;
+	font-style: italic;
+}
+
+form {
+    display: inline-block;
+    border: 2px solid teal;
+    padding: 2ex;
+    border-radius: 2ex;
+}
+
+[type=submit] {
+    font-size: 1em;
+    font-weight: normal;
+    border: 1px solid teal;
+    border-radius: 0.5em;
+    background-color: #d0FFFF;
+}
+
+fieldset {
+    display: inline-block;
+}
+
+#iconlist {
+    list-style-type: none;  /* no bullets */
+    padding: 0px;
+}
+
+#iconlist li {
+    display: inline;
+}
