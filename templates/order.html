@@ -9,7 +9,6 @@ Html template for the rateMovies page -->
 
 {% block content %}
   <p><button id="progressive_enhancement">Turn On Progressive Enhancement</button></p>
-  <p>Logged in as <strong>{{userid}}</strong></p>
   <style scoped>
     .selected { font-weight: bold; }
     table {
@@ -29,9 +28,6 @@ Html template for the rateMovies page -->
          font-size: 1em;
          font-weight: normal;
     }
-    [type=text] {
-      width:15px;
-    }
   </style>
   <table id="menu_list">
       <tr><th>Item Name (Price)</th><th>Description</th><th>Quantity</th></tr>
@@ -50,6 +46,18 @@ Html template for the rateMovies page -->
     {% endfor %}
   </table>
 
+  {% if cartContents: %}
+         <p>Your cart contains:</p>
+         <ul>
+         {% for item in cart %}
+             <li>{{cart[item]}} glasses of {{item}}</li>
+         {% endfor %}
+         </ul>
+  {% endif %}
+
+  <form method=post action="">
+    <input type=submit name=submit value="{{showCart}}">
+  </form>
 
   <!-- <script>
 
