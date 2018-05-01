@@ -1,0 +1,33 @@
+<!-- 
+Chloe Blazey, Heidi Cho, Eliza McNair 
+On the Go : CS 304 Final Project 
+role.html
+Last Updated: May 1, 2018 --> 
+
+{% extends "base.html" %}
+{% block content %}
+
+<style scoped>
+    .selected { font-weight: bold; }
+    table {
+            border-collapse: collapse;
+    }
+    tr {
+        border: 2px solid teal;
+        padding: 2ex;
+    }
+    form {
+       display: inline-block;
+       border: 1px solid teal;
+       padding: 1ex;
+       border-radius: 2ex;
+    }
+    [type=submit] {
+         font-size: 1em;
+         font-weight: normal;
+    }
+</style> 
+
+<p>Are you logged on as a <a href="{{url_for('order')}}">student</a> or as an <a href="{{url_for('distribute')}}">administrator</a>?</p>
+
+{% endblock %}

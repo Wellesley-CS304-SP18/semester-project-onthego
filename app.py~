@@ -213,7 +213,7 @@ def distribute():
 		org = functions.getOrg(adminID, conn)
 		activeOrders = functions.getActiveOrders(adminID, conn)
 
-		return render_template('admin.html', title="Orders to " + org, orders=activeOrders)
+		return render_template('distribute.html', title="Orders to " + org, orders=activeOrders)
 
 # route for ajax method to set ratings
 @app.route('/setRatingAjax/', methods=['POST', 'GET'])

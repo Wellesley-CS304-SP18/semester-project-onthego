@@ -1,0 +1,50 @@
+<!-- 
+Chloe Blazey, Heidi Cho, Eliza McNair 
+On the Go : CS 304 Final Project 
+admin.html
+Last Updated: May 1, 2018 --> 
+
+{% extends "base.html" %}
+{% block content %}
+
+<style scoped>
+    .selected { font-weight: bold; }
+    table {
+            border-collapse: collapse;
+    }
+    tr {
+        border: 2px solid teal;
+        padding: 2ex;
+    }
+    form {
+       display: inline-block;
+       border: 1px solid teal;
+       padding: 1ex;
+       border-radius: 2ex;
+    }
+    [type=submit] {
+         font-size: 1em;
+         font-weight: normal;
+    }
+</style> 
+
+<table id="order_list"> 
+    <tr><th>Order ID:</th>
+        <th>Student ID (B#):</th>
+        <th>Order Item:</th>
+        <th>Item Quantity:</th>
+        <th>Complete?</th>
+    </tr>
+    {% for item in orders %}
+    <tr class="order_row">
+        <td>{{item['pid']}}</td>
+	<td>{{item['student']}}</td>
+	<td>{{item['distributor']}}</td>
+	<td>{{item['mid']}}</td>
+	<td>{{item['quantity']}}</td>
+	<td>{{item['complete']}}</td>
+    </tr>
+</table>
+
+{% endblock %}
+

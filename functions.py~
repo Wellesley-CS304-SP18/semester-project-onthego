@@ -16,20 +16,6 @@ def getMenu(conn):
 	results = curs.fetchall()
 	return results
 
-# Returns the name of a distributor after lookup by id
-def getOrg(adminID, conn): 
-	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-	curs.execute('SELECT name FROM distributor WHERE (did = %s)',[adminID,])
-	org = curs.fetchone()
-	return org
-
-# Returns all active orders for a given distributor (lookup by id)
-def getActiveOrders(adminID, conn): 
-	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-	curs.execute('SELECT purchaseItems.pid, purchase.student, purchaseItems.id, purchaseItems.quantity, purchase.complete from purchaseItems INNER JOIN USING (pid) WHERE (purchase.distributor = %s)',[adminID,])
-	orders = curs.fetchall()
-	return orders
-
 # This starts the ball rolling, *if* the script is run as a script,
 # rather than just being imported.
 if __name__ == '__main__':
