@@ -23,6 +23,13 @@ def getOrg(adminID, conn):
 	org = curs.fetchone()
 	return org
 
+# Returns a user's bnum and admin 
+def getUser(username, conn):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor)
+	curs.execute('SELECT bnum, admin FROM student WHERE (username = %s)', [username,])
+	student = curs.fetchone()
+	return student
+
 # Returns all active orders for a given distributor (lookup by id)
 def getActiveOrders(adminID, conn): 
 	curs = conn.cursor(MySQLdb.cursors.DictCursor)

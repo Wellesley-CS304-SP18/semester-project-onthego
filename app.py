@@ -47,7 +47,16 @@ def login():
             flash('Successfully logged onto On-the-Go as ' + username + '.')
             session['username'] = username
             session['logged_in'] = True
-            return #Where are we going next?
+
+	    user = functions.getUser(username, conn)
+	    bnum = user['bnum']
+	    session['bnum'] = bnum
+	    adminID = user['admin']
+
+	    if adminID != None: 
+		    session['admin'] = adminID
+		    return redirect(url_for('role'))
+            return redirect(url_for('order'))
         else:
             flash("Incorrect login information: please re-enter your username and password, or create an account.")
             return redirect(url_for('login'))
