@@ -31,11 +31,7 @@ def login():
         retPassword = request.form['ret-password']
 
         conn = dbconn2.connect(dsn)
-        curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        # called password in our table but assumption is hashed
-        curs.execute('SELECT password FROM student WHERE username = %s',
-                     [retUsername])
-        row = curs.fetchone()
+        row = functions.getPassword(retUsername, conn)
         if row is None:
             # Wrong password response:
             flash("Incorrect login information: please re-enter your username and password, or create an account.")
@@ -48,7 +44,7 @@ def login():
             session['username'] = username
             session['logged_in'] = True
 
-	    user = functions.getUser(username, conn)
+	    user = functions.usernameLookup(username, conn)
 	    bnum = user['bnum']
 	    session['bnum'] = bnum
 	    adminID = user['admin']
@@ -90,18 +86,12 @@ def join():
         hashed = bcrypt.hashpw(newPassword.encode('utf-8'), bcrypt.gensalt())
 
         conn = dbconn2.connect(dsn)
-        curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        curs.execute('SELECT username FROM student WHERE username = %s',
-                     [newUsername,])
-        row = curs.fetchone()
+        row = functions.usernameLookup(newUsername, conn)
         if row is not None:
             flash ("Error: The username you entered is already taken. Please try again with a new username.")
             return redirect(url_for('join'))
         conn = dbconn2.connect(dsn)
-        curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        curs.execute('SELECT bnum FROM student WHERE bnum = %s',
-                     [bNum,])
-        row = curs.fetchone()
+        row = functions.bnumLookup(bNum, conn)
         if row is not None:
             flash ("Error: An account already exists for the B-number you entered.")
             return redirect(url_for('join'))
@@ -111,11 +101,8 @@ def join():
         if org != "Choose One":
             # org, adminUser, adminPass to veryify - org value is
             conn = dbconn2.connect(dsn)
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
             hashedAdmin = bcrypt.hashpw(adminPass.encode('utf-8'), bcrypt.gensalt())
-            curs.execute('SELECT admin FROM student WHERE username = %s AND password = %s',
-                         [adminUser, hashedAdmin])
-            adminOrg = curs.fetchone()
+            adminOrg = functions.checkAdmin(adminUser, hashedAdmin, conn)
             if adminOrg is None:
                 flash("Error: No such administrator exists. Please try again.")
                 return redirect(url_for('join'))
@@ -127,9 +114,8 @@ def join():
             elif adminOrg == org: # Q: is the logic tight enough to use an 'else'?
 
             	conn = dbconn2.connect(dsn)
-            	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-                curs.execute('INSERT INTO student(bnum, name, username, password, admin) VALUES(%s, %s, %s, %s, %s)', [bNum, name, newUsername, hashed, org])
-                session['bnum'] = bnum
+                functions.createUserAdmin(bNum, name, newUsername, hashed, org, conn)
+		session['bnum'] = bNum
 		session['username'] = newUsername
 		session['admin'] = admin
                 session['logged_in'] = True
@@ -138,9 +124,8 @@ def join():
         elif org == "Choose One":
             # no attempt to create an account as an administrator
             conn = dbconn2.connect(dsn)
-            curs = conn.cursor(MySQLdb.cursors.DictCursor)
-            curs.execute('INSERT INTO student (bnum, name, username, password) VALUES(%s, %s, %s, %s)', [bNum, name, newUsername, hashed])
-            session['bnum'] = bnum
+            functions.createUser(bNum, name, newUsername, hashed, conn)
+            session['bnum'] = bNum
 	    session['username'] = newUsername
             session['logged_in'] = True
             return redirect(url_for('order'))
@@ -148,9 +133,7 @@ def join():
     else:
         # GET case: no form submission
         conn = dbconn2.connect(dsn)
-        curs = conn.cursor(MySQLdb.cursors.DictCursor)
-        curs.execute('SELECT * FROM distributor')
-        orgs = curs.fetchall()
+        orgs = functions.getDistributors(conn)
         return render_template('join.html', title="Welcome to On-the-Go!", script=url_for('join'), orgs = orgs)
 
 @app.route('/logout/')
