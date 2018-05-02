@@ -1,0 +1,28 @@
+<!-- @author Heidi Cho
+On The Go
+rateMovies.html
+
+Html template for the order confirmation page -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <table id="menu_list">
+      <tr><th>Order # (Student ID)</th><th>Name (Quantity)</th><th>Time</th><th>Complete</th></tr>
+      {% for item in orders %}
+      <tr class="menu_row">
+            <td>{{item['pid']}} ({{item['student']}})</td>
+            <td class="rating" id ="{{item['pid']}}">{{names[item['mid']]}} ({{item['quantity']}})</td>
+            <td>{{times[item['pid']]}}</td>
+            <td>
+              <form data-mid=1 action="{{url_for('admin')}}" method=post>
+                <input type="hidden" name="pid" value="{{item['pid']}}">
+                <input type="hidden" name="mid" value="{{item['mid']}}">
+                <input type="submit" name="submit" value="markAsComplete">
+              </form>
+            </td>
+      </tr>
+      {% endfor %}
+  </table>
+
+{% endblock %}

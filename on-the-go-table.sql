@@ -51,6 +51,7 @@ create table purchase (
 	student int(10) unsigned,
 	distributor int(10) unsigned,
 	complete int(1), -- if order is complete, complete = 1. Else complete = NULL
+	dt datetime,
 	INDEX(distributor),
 	INDEX(student),
 	foreign key (distributor) references distributor(did) on delete set null,

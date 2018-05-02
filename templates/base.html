@@ -1,6 +1,5 @@
-<!-- @author Heidi Cho, Midori Yang
-CS 304 Homework 6: Ajax
-4.4.18
+<!-- @author Heidi Cho
+On The Go
 base.html
 
 Base html template for the web application -->
@@ -13,6 +12,7 @@ Base html template for the web application -->
 		H1 {
 		    color: teal;
 		    font-size: 200%;
+				text-align: center;
 		}
 		form {
 		    display: inline-block;
@@ -41,22 +41,75 @@ Base html template for the web application -->
 		#iconlist li {
 		    display: inline;
 		}
+
+		ul.navli {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+		}
+
+		li.navli {
+		    float: left;
+		}
+
+		li.userli {
+			float: right;
+			display: block;
+			color: white;
+			padding: 14px 16px;
+			text-decoration: none;
+		}
+
+		li.navli a {
+		    display: block;
+		    color: white;
+		    text-align: center;
+		    padding: 14px 16px;
+		    text-decoration: none;
+		}
+
+		/* Change the link color to #111 (black) on hover */
+		li.navli a:hover {
+		    background-color: #111;
+		}
+		.selected { font-weight: bold; }
+    table {
+            border-collapse: collapse;
+    }
+    tr {
+        border: 2px solid teal;
+        padding: 2ex;
+    }
+    form {
+       display: inline-block;
+       border: 1px solid teal;
+       padding: 1ex;
+       border-radius: 2ex;
+    }
+    [type=submit] {
+         font-size: 1em;
+         font-weight: normal;
+    }
 	</style>
 	<link rel="stylesheet" type="text/css"
           href="/static/styling.css">
 	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
 </head>
 <body>
-	<ul>
-		<li><a href="{{url_for('home')}}">On the Go</a></li>
-		<li><a href="{{url_for('login')}}">Login</a></li>
-		<li> <a href="{{ url_for('join') }}">Create Account</a></li>
-		<li><a href="{{url_for('order')}}">Order</a></li>
+	<ul class="navli">
+		<li class="navli"><a href="{{url_for('home')}}">On the Go</a></li>
+		<li class="navli"><a href="{{url_for('login')}}">Login</a></li>
+		<li class="navli"><a href="{{ url_for('join') }}">Create Account</a></li>
+		<li class="navli"><a href="{{url_for('order')}}">Order Now</a></li>
+		<li class="navli"><a href="{{url_for('account')}}">Your Account & Orders</a></li>
+		<li class="navli"><a href="{{url_for('admin')}}">Admin Only</a></li>
+		<li class="userli">Logged in as {{user}}</li>
 	</ul>
 
 	<!-- Name of page goes here -->
 	<h1>{{title}}</h1>
-
 	<!-- Error messages will be flashed here -->
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}

@@ -1,33 +1,12 @@
-<!-- @author Heidi Cho, Midori Yang
-CS 304 Homework 6: Ajax
-4.4.18
-rateMovies.html
+<!-- @author Heidi Cho
+On The Go
+order.html
 
-Html template for the rateMovies page -->
+Html template for the order page -->
 
 {% extends "base.html" %}
 
 {% block content %}
-  <style scoped>
-    .selected { font-weight: bold; }
-    table {
-            border-collapse: collapse;
-    }
-    tr {
-        border: 2px solid teal;
-        padding: 2ex;
-    }
-    form {
-       display: inline-block;
-       border: 1px solid teal;
-       padding: 1ex;
-       border-radius: 2ex;
-    }
-    [type=submit] {
-         font-size: 1em;
-         font-weight: normal;
-    }
-  </style>
   <table id="menu_list">
       <tr><th>Item Name (Price)</th><th>Description</th><th>Quantity</th></tr>
       {% for item in menu %}
@@ -54,6 +33,7 @@ Html template for the rateMovies page -->
       {% endif %}
     {% endfor %}
   </ul>
+  <p>Total price: {{price}}</p>
 
   <form method=post action="">
     <input type=submit name=submit value="submitCart">
