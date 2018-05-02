@@ -32,13 +32,16 @@ def login():
 
         conn = dbconn2.connect(dsn)
         row = functions.getPassword(retUsername, conn)
+
         if row is None:
-            # Wrong password response:
+            # Wrong username response:
             flash("Incorrect login information: please re-enter your username and password, or create an account.")
             return redirect(url_for('login'))
+
         hashed = row['password']
         bPasswd = bcrypt.hashpw(retPassword.encode('utf-8'), hashed.encode('utf-8'))
         print bPasswd # for debugging
+        # if password is correct, log in
         if hashed == bPasswd:
             flash('Successfully logged onto On-the-Go as ' + retUsername + '.')
             session['username'] = retUsername
@@ -49,6 +52,7 @@ def login():
 	    session['bnum'] = bnum
 	    adminID = user['admin']
 
+	    # if user is an admin... how are we returning twice?
 	    if adminID != None:
 		    session['admin'] = adminID
 		    return redirect(url_for('role'))
@@ -163,6 +167,7 @@ def role():
 def order():
 	conn = dbconn2.connect(dsn)
 	results = functions.getMenu(conn) # get the menu items
+	
 	if 'cart' in session: # if the user already has a cart in use
 		cart = session['cart']
 	else: # if not, create an empty cart
@@ -227,6 +232,6 @@ if __name__ == '__main__':
 	else:
 		port = os.getuid()
 	dsn = dbconn2.read_cnf()
-	dsn['db'] = 'hcho5_db' # database we want to connect to
+	dsn['db'] = 'cblazey_db' # database we want to connect to
 	app.debug = True
 	app.run('0.0.0.0', port)
