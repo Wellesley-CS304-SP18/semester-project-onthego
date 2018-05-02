@@ -8,8 +8,6 @@ Html template for the rateMovies page -->
 {% extends "base.html" %}
 
 {% block content %}
-  <p><button id="progressive_enhancement">Turn On Progressive Enhancement</button></p>
-  <p>Logged in as <strong>{{userid}}</strong></p>
   <style scoped>
     .selected { font-weight: bold; }
     table {
@@ -29,9 +27,6 @@ Html template for the rateMovies page -->
          font-size: 1em;
          font-weight: normal;
     }
-    [type=text] {
-      width:15px;
-    }
   </style>
   <table id="menu_list">
       <tr><th>Item Name (Price)</th><th>Description</th><th>Quantity</th></tr>
@@ -42,14 +37,27 @@ Html template for the rateMovies page -->
           <td>
             <form data-mid=1 action="{{url_for('order')}}" method=post>
               <input type="hidden" name="menu_mid" value="{{item['mid']}}">
+              <input type="hidden" name="menu_name" value="{{item['name']}}">
               <input type="text" name="item-quantity" value="0">
-              <input type="submit" name="submit-btn" value="Add to Cart">
+              <input type="submit" name="submit" value="addToCart">
             </form>
           </td>
       </tr>
     {% endfor %}
   </table>
 
+  <p>Your cart contains:</p>
+  <ul>
+    {% for thing in cart %}
+      {% if cart[thing] != 0 %}
+        <li>{{cart[thing]}} of {{thing}}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <form method=post action="">
+    <input type=submit name=submit value="submitCart">
+  </form>
 
   <!-- <script>
 

@@ -1,0 +1,17 @@
+<!-- @author Heidi Cho, Midori Yang
+CS 304 Homework 6: Ajax
+4.4.18
+rateMovies.html
+
+Html template for the rateMovies page -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <p>You've placed an order of:</p>
+  <ul>
+    {% for thing in order %}
+      <li>{{thing['name']}}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

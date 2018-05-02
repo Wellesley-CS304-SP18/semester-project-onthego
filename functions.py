@@ -16,6 +16,38 @@ def getMenu(conn):
 	results = curs.fetchall()
 	return results
 
+def addPurchase(conn, id):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor) # results as Dictionaries
+	curs.execute('INSERT INTO purchase (student, distributor) VALUES (%s, 1)', [id])
+
+def addPurchaseItems(conn, pid, mid, quantity):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor) # results as Dictionaries
+	curs.execute('INSERT INTO purchaseItems (pid, mid, quantity) VALUES (%s,%s,%s)', [pid, mid, quantity])
+
+def getPurchaseID(conn):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor) # results as Dictionaries
+	curs.execute('SELECT MAX(pid) AS LargestPid FROM purchase')
+	id = curs.fetchone()
+	return id
+
+def getPurchaseItems(conn, pid):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor) # results as Dictionaries
+	curs.execute('SELECT * from purchaseItems where pid = %s', [pid])
+	results = curs.fetchall()
+	return results
+
+def getMID(conn, thing):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor) # results as Dictionaries
+	curs.execute('SELECT mid from menu where menu.name=%s', [thing])
+	id = curs.fetchone()
+	return id
+
+def getName(conn, thing):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor) # results as Dictionaries
+	curs.execute('SELECT name from menu where mid=%s', [thing])
+	id = curs.fetchone()
+	return id
+
 # This starts the ball rolling, *if* the script is run as a script,
 # rather than just being imported.
 if __name__ == '__main__':

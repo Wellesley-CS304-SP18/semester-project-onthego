@@ -63,6 +63,7 @@ ENGINE = InnoDB;
 create table purchaseItems (
 	pid int(10) unsigned not null,
 	mid int(10) unsigned not null,
+	quantity int(2) unsigned,
 	primary key (pid, mid),
 	INDEX(pid),
 	INDEX(mid),
@@ -78,13 +79,13 @@ INSERT INTO distributor (name) VALUES ('The Hoop');
 
 -- Students
 INSERT INTO student (bnum, name, username, password, admin)
-VALUES ('20729654', 'Heidi Cho', 'hcho5', 'secret', '1');
+VALUES ('20729654', 'Heidi Cho', 'hcho5', '1234567890', '1');
 INSERT INTO student (bnum, name, username, password, admin)
-VALUES ('20758475', 'Eliza McNair', 'emcnair', 'secret', '1');
+VALUES ('20758475', 'Eliza McNair', 'emcnair', '1234567890', '1');
 INSERT INTO student (bnum, name, username, password, admin)
-VALUES ('20805803', 'Chloe Blazey', 'cblazey', 'secret', '1');
+VALUES ('20805803', 'Chloe Blazey', 'cblazey', '1234567890', '1');
 INSERT INTO student (bnum, name, username, password)
-VALUES ('20123456', 'Wendy Wellesley', 'wwellesley', 'secret');
+VALUES ('20123456', 'Wendy Wellesley', 'wwellesley', '1234567890');
 
 -- Menus
 INSERT INTO menu (name, price, distributor, description)
