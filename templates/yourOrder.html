@@ -1,17 +1,18 @@
-<!-- @author Heidi Cho, Midori Yang
-CS 304 Homework 6: Ajax
-4.4.18
+<!-- @author Heidi Cho
+On The Go
 rateMovies.html
 
-Html template for the rateMovies page -->
+Html template for the order confirmation page -->
 
 {% extends "base.html" %}
 
 {% block content %}
   <p>You've placed an order of:</p>
   <ul>
-    {% for thing in order %}
-      <li>{{thing['name']}}</li>
+    {% for thing in cart %}
+      {% if cart[thing] != 0 %}
+        <li>{{cart[thing]}} of {{thing}}</li>
+      {% endif %}
     {% endfor %}
   </ul>
 {% endblock %}

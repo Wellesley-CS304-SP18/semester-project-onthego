@@ -1,0 +1,16 @@
+<!-- @author Heidi Cho
+On The Go
+account.html
+
+Html template for the account page -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- button to logout -->
+  <form method=post action="">
+    <input type=submit name=submit value="logout">
+  </form>
+  <!-- Where users favorite orders will go -->
+  <p>Your Favorite Orders:</p>
+{% endblock %}

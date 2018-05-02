@@ -1,10 +1,16 @@
+<!-- @author Eliza McNair
+On The Go
+join.html
+
+Html template for the join page -->
+
 {% extends "base.html" %}
 <!-- requires that a title and script be passed in via app.py -->
 
 {% block content %}
 <!-- Screen to create a new account; uses POST to send form data -->
 
-<p> Please fill in the fields below with your information, then click 'Create Account' - we'll handle the rest! </p> 
+<p> Please fill in the fields below with your information, then click 'Create Account' - we'll handle the rest! </p>
 
 <form method="POST" action="{{script}}">
 <p> Please enter your B#, a unique username, and a password below. You will need to enter the password twice to confirm it. If the username you entered is already taken, you will be prompted to enter a new one.</p>

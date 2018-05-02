@@ -1,6 +1,5 @@
-<!-- @author Heidi Cho, Midori Yang
-CS 304 Homework 6: Ajax
-4.4.18
+<!-- @author Heidi Cho
+On The Go
 base.html
 
 Base html template for the web application -->
@@ -51,12 +50,13 @@ Base html template for the web application -->
 		<li><a href="{{url_for('home')}}">On the Go</a></li>
 		<li><a href="{{url_for('login')}}">Login</a></li>
 		<li> <a href="{{ url_for('join') }}">Create Account</a></li>
-		<li><a href="{{url_for('order')}}">Order</a></li>
+		<li><a href="{{url_for('order')}}">Order Now</a></li>
+		<li><a href="{{url_for('account')}}">Your Account and Orders</a></li>
 	</ul>
 
 	<!-- Name of page goes here -->
 	<h1>{{title}}</h1>
-
+	<p>Logged in as {{user}}</p>
 	<!-- Error messages will be flashed here -->
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}

@@ -1,9 +1,8 @@
-<!-- @author Heidi Cho, Midori Yang
-CS 304 Homework 6: Ajax
-4.4.18
-rateMovies.html
+<!-- @author Heidi Cho
+On The Go
+order.html
 
-Html template for the rateMovies page -->
+Html template for the order page -->
 
 {% extends "base.html" %}
 
@@ -54,6 +53,7 @@ Html template for the rateMovies page -->
       {% endif %}
     {% endfor %}
   </ul>
+  <p>Total price: {{price}}</p>
 
   <form method=post action="">
     <input type=submit name=submit value="submitCart">
