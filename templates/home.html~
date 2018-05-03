@@ -1,0 +1,18 @@
+<!-- @author Heidi Cho
+On The Go
+home.html
+
+Html template for the home page -->
+
+{% extends "base.html" %}
+
+{% block content %}
+	<div style="width: 600px; margin: auto;">
+		<img src="/static/images/eltable_logo.png" alt="logo">
+		<p>Welcome to On-the-Go, a website where Wellesley students can order food online from
+			El Table. Because Wellesley students are constantly on the
+			 move, many people cannot or do not want to wait thirty to forty minutes for
+			  their orders to be made. On-the-Go allows you to be somewhere else while your order is
+				being made and to pick it up when it's ready. </p>
+	</div>
+{% endblock %}
