@@ -145,6 +145,8 @@ def join():
 @app.route('/account/', methods=["GET", "POST"])
 def account():
 	if (request.method == "GET"):
+		if 'logged_in' not in session:
+			return render_template('pagenotfound.html')
 		return render_template('account.html', title="Your Account")
 	else:
 		if ('submit' in request.form):
@@ -167,7 +169,10 @@ def role():
 def order():
 	conn = dbconn2.connect(dsn)
 	results = functions.getMenu(conn) # get the menu items
-	
+
+	if 'logged_in' not in session:
+		return render_template('pagenotfound.html')
+
 	if 'cart' in session: # if the user already has a cart in use
 		cart = session['cart']
 	else: # if not, create an empty cart
@@ -221,6 +226,10 @@ def order():
 # Route for the order confirmation page
 @app.route('/yourOrder/', methods=['POST', 'GET'])
 def yourOrder():
+	
+	if 'logged_in' not in session:
+		return render_template('pagenotfound.html')
+	
 	cart = session['cart']
 	session['cart'] = {}
 	return render_template('yourOrder.html',title = "Thank you!", cart=cart)

@@ -1,0 +1,19 @@
+<!-- @author Chloe Blazey
+On The Go
+pagenotfound.html
+
+Html template for the error page -->
+
+{% extends "base.html" %}
+
+{% block content %}
+	<style>
+		H1 {
+				text-align: center;
+		}
+	</style>
+	<div style="width: 600px; margin: auto;">
+		<img src="/home/public_html/cs304/logo.png" alt="logo">
+		<p>Oops! It looks like you need to be logged in to view this content. </p>
+	</div>
+{% endblock %}
