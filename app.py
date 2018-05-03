@@ -9,7 +9,7 @@ from flask import Flask, render_template, flash, request, redirect, url_for, mak
 import sys, os, random
 import MySQLdb
 import dbconn2
-import functions
+import functions, auth
 import bcrypt
 import decimal
 
@@ -31,7 +31,7 @@ def login():
         retPassword = request.form['ret-password']
 
         conn = dbconn2.connect(dsn)
-        row = functions.getPassword(retUsername, conn)
+        row = auth.getPassword(retUsername, conn)
 
         if row is None:
             # Wrong username response:
@@ -47,7 +47,7 @@ def login():
             session['username'] = retUsername
             session['logged_in'] = True
 
-	    user = functions.usernameLookup(retUsername, conn)
+	    user = auth.usernameLookup(retUsername, conn)
 	    bnum = user['bnum']
 	    session['bnum'] = bnum
 	    adminID = user['admin']
@@ -91,12 +91,12 @@ def join():
         hashed = bcrypt.hashpw(newPassword.encode('utf-8'), bcrypt.gensalt())
 
         conn = dbconn2.connect(dsn)
-        row = functions.usernameLookup(newUsername, conn)
+        row = auth.usernameLookup(newUsername, conn)
         if row is not None:
             flash ("Error: The username you entered is already taken. Please try again with a new username.")
             return redirect(url_for('join'))
         conn = dbconn2.connect(dsn)
-        row = functions.bnumLookup(bNum, conn)
+        row = auth.bnumLookup(bNum, conn)
         if row is not None:
             flash ("Error: An account already exists for the B-number you entered.")
             return redirect(url_for('join'))
@@ -107,7 +107,7 @@ def join():
             # org, adminUser, adminPass to veryify - org value is
             conn = dbconn2.connect(dsn)
             hashedAdmin = bcrypt.hashpw(adminPass.encode('utf-8'), bcrypt.gensalt())
-            adminOrg = functions.checkAdmin(adminUser, hashedAdmin, conn)
+            adminOrg = auth.checkAdmin(adminUser, hashedAdmin, conn)
             if adminOrg is None:
                 flash("Error: No such administrator exists. Please try again.")
                 return redirect(url_for('join'))
@@ -119,7 +119,7 @@ def join():
             elif adminOrg == org: # Q: is the logic tight enough to use an 'else'?
 
             	conn = dbconn2.connect(dsn)
-                functions.createUserAdmin(bNum, name, newUsername, hashed, org, conn)
+                auth.createUserAdmin(bNum, name, newUsername, hashed, org, conn)
 		session['bnum'] = bNum
 		session['username'] = newUsername
 		session['admin'] = admin
@@ -129,7 +129,7 @@ def join():
         elif org == "Choose One":
             # no attempt to create an account as an administrator
             conn = dbconn2.connect(dsn)
-            functions.createUser(bNum, name, newUsername, hashed, conn)
+            auth.createUser(bNum, name, newUsername, hashed, conn)
             session['bnum'] = bNum
 	    session['username'] = newUsername
             session['logged_in'] = True
