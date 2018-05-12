@@ -1,0 +1,36 @@
+<!-- @author Heidi Cho
+On The Go
+account.html
+
+Html template for the account page -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- button to logout -->
+  <form method=post action="">
+    <input type=submit name=submit value="logout">
+  </form>
+
+  <table id="menu_list">
+      <!-- Where current order will go -->
+      <p>Your Orders:</p>
+      <tr><th>Order #</th><th>Name (Quantity)</th><th>Notes</th><th>Time</th><th>Complete</th></tr>
+      {% for item in orders %}
+      <tr class="menu_row">
+            <td>{{item['pid']}}</td>
+            <td class="rating" id ="{{item['pid']}}">{{names[item['mid']].get("name")}} ({{item['quantity']}})</td>
+            <td>{{item['notes']}}</td>
+            <td>{{times[item['pid']].get("dt")}}</td>
+            <td>
+              {% if item['complete'] == None %}
+              <p>Not Complete</p>
+              {% endif %}
+              {% if item['complete'] == 1 %}
+              <p>Complete</p>
+              {% endif %}
+            </td>
+      </tr>
+      {% endfor %}
+  </table>
+{% endblock %}

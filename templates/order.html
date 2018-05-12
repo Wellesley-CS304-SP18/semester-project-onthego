@@ -1,106 +1,73 @@
-<!-- @author Heidi Cho, Midori Yang
-CS 304 Homework 6: Ajax
-4.4.18
-rateMovies.html
+<!-- @author Heidi Cho
+On The Go
+order.html
 
-Html template for the rateMovies page -->
+Html template for the order page -->
 
 {% extends "base.html" %}
 
 {% block content %}
-  <style scoped>
-    .selected { font-weight: bold; }
-    table {
-            border-collapse: collapse;
-    }
-    tr {
-        border: 2px solid teal;
-        padding: 2ex;
-    }
-    form {
-       display: inline-block;
-       border: 1px solid teal;
-       padding: 1ex;
-       border-radius: 2ex;
-    }
-    [type=submit] {
-         font-size: 1em;
-         font-weight: normal;
-    }
-  </style>
   <table id="menu_list">
       <tr><th>Item Name (Price)</th><th>Description</th><th>Quantity</th></tr>
+      {% set count = 0 %}
       {% for item in menu %}
-      <tr class="menu_row">
+        <tr class="menu_row">
           <td>{{item['name']}} (${{item['price']}})</td>
-          <td class="rating" id = "{{item['mid']}}">{{item['description']}}</td>
+          <td>{{item['description']}}</td>
           <td>
             <form data-mid=1 action="{{url_for('order')}}" method=post>
               <input type="hidden" name="menu_mid" value="{{item['mid']}}">
               <input type="hidden" name="menu_name" value="{{item['name']}}">
-              <input type="text" name="item-quantity" value="0">
-              <input type="submit" name="submit" value="addToCart">
+              {% if cart %}
+              <input type="number" id="{{item['mid']}}" class="menu" name="item-quantity" style="text-align:center; max-width:50px;" MIN="0" value="{{cart[count]['quantity']}}">
+              <!-- <input type="submit" name="submit" value="addToCart"> -->
+              {% endif %}
+              {% if not cart %}
+              <input type="number" id="{{item['mid']}}" class="menu" name="item-quantity" style="text-align:center; max-width:50px;" MIN="0" value="0">
+              <!-- <input type="submit" name="submit" value="addToCart"> -->
+              {% endif %}
             </form>
           </td>
-      </tr>
+        </tr>
+        {% set count = count + 1 %}
     {% endfor %}
   </table>
 
   <p>Your cart contains:</p>
   <ul>
     {% for thing in cart %}
-      {% if cart[thing] != 0 %}
-        <li>{{cart[thing]}} of {{thing}}</li>
-      {% endif %}
+      <li class="list" id="{{thing['mid']}}">{{thing['quantity']}} of {{thing['name']}}</li>
     {% endfor %}
   </ul>
+  <p id="cost">Total cost: {{price}}</p>
 
+  <p>WHEN YOU ARE DONE WITH YOUR CART, please enter any allergies or modifications for your order here, if you have any:</p>
   <form method=post action="">
+    <textarea name="comment"></textarea>
     <input type=submit name=submit value="submitCart">
   </form>
 
-  <!-- <script>
+  <script>
 
-    // update the rating in the html
-    function updateRating(data){
-      tt = data['tt'];
-      rating = data['avgrating'];
-      $('#' + tt + '.rating').html(rating);
+    // $("li:contains('0')").css("display", "none");
+
+    // update the cart in the html
+    function updateCart(data){
+      quantity = data['quantity'];
+      name = data['name'];
+      cost = data['cost'];
+      mid = data['mid'];
+      $('#' + mid + '.list').html(quantity + ' of ' + name);
+      $("#cost").html('Total cost: ' + cost);
     }
 
-    var progressive_on = false;
-    $("#progressive_enhancement")
-    .on('click',
-        function toggleProgessiveEnhancement() {
-            if( progressive_on ) { // if it's on
-                $("input[name=stars],input[type=submit]").show(); // show submit btn
-                $("#progressive_enhancement")
-                    .text("Turn on Progressive Enhancement");
-                $("label").off(); // turn off the event handler for submitting ajax
-                $("label").css("font-weight","normal");
+    $("input").on("change", function() {
+      formData = $(this).parent().serialize();
+      $.post("/orderAjax/", // post to setRatingAjax
+      formData,
+      updateCart, // update the html to reflect new rating
+      "json");
+    });
 
-                // turn it off
-                progressive_on = false;
-            } else {
-                $("input[name=stars],input[type=submit]").hide();
-                $("#progressive_enhancement")
-                     .text("Turn off Progressive Enhancement");
-
-                // function to send user's selection via ajax
-                $("label").click(function(){
-                  $(this).parent().children().css("font-weight","normal");
-                  $(this).css("font-weight","bold"); // bold the user's rating
-                  formData = $(this).parent().serialize(), // serialize the rating and tt
-                  $.post("/setRatingAjax/", // post to setRatingAjax
-                  formData,
-                  updateRating, // update the html to reflect new rating
-                  "json");
-                });
-
-                // turn it on
-                progressive_on = true;
-            }
-        });
-
-  </script>-->
+  </script>
 {% endblock %}

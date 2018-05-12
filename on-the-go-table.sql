@@ -51,6 +51,8 @@ create table purchase (
 	student int(10) unsigned,
 	distributor int(10) unsigned,
 	complete int(1), -- if order is complete, complete = 1. Else complete = NULL
+	dt datetime,
+	notes varchar(100),
 	INDEX(distributor),
 	INDEX(student),
 	foreign key (distributor) references distributor(did) on delete set null,
@@ -77,16 +79,6 @@ ENGINE = InnoDB;
 INSERT INTO distributor (name) VALUES ('El Table');
 INSERT INTO distributor (name) VALUES ('The Hoop');
 
--- Students
-INSERT INTO student (bnum, name, username, password, admin)
-VALUES ('20729654', 'Heidi Cho', 'hcho5', '1234567890', '1');
-INSERT INTO student (bnum, name, username, password, admin)
-VALUES ('20758475', 'Eliza McNair', 'emcnair', '1234567890', '1');
-INSERT INTO student (bnum, name, username, password, admin)
-VALUES ('20805803', 'Chloe Blazey', 'cblazey', '1234567890', '1');
-INSERT INTO student (bnum, name, username, password)
-VALUES ('20123456', 'Wendy Wellesley', 'wwellesley', '1234567890');
-
 -- Menus
 INSERT INTO menu (name, price, distributor, description)
 VALUES ('El Table Club', '7.00', '1', 'bacon, turkey, avocado, tomato,
@@ -100,9 +92,3 @@ sourdough bread');
 INSERT INTO menu (name, price, distributor, description)
 VALUES ('The Green Monstah', '5.50', '1', 'avocado, pesto, goat cheese,
 provolone, and greens on sourdough bread');
-
--- Orders
-INSERT INTO purchase (student, distributor) VALUES ('20729654', '1');
-
--- Order items
-INSERT INTO purchaseItems (pid, mid) VALUES ('1', '1');
