@@ -17,38 +17,55 @@ def getDistributors(conn):
 	return orgs
 
 # Returns first 20 menu items from db starting at 0
+# Currently returning all menu items
 def getMenu(conn):
 	curs = conn.cursor(MySQLdb.cursors.DictCursor) # results as Dictionaries
-	curs.execute('select * from menu limit 20')
+	#curs.execute('select * from menu limit 20')
+	curs.execute('select * from menu')
 	results = curs.fetchall()
 	return results
 
 # Returns the name of a distributor after lookup by id
 def getOrg(adminID, conn):
 	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-	curs.execute('SELECT name FROM distributor WHERE (did = %s)',[adminID])
+	curs.execute('SELECT name FROM distributor WHERE (did = %s)',[adminID,])
 	org = curs.fetchone()
 	return org
 
 # Returns all active orders
 def getActiveOrders(conn):
 	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-	curs.execute('SELECT * from purchaseItems INNER JOIN purchase on (purchaseItems.pid = purchase.pid) WHERE purchase.distributor = 1 and purchase.complete is NULL')
+	curs.execute('SELECT * FROM purchaseItems INNER JOIN purchase ON (purchaseItems.pid = purchase.pid) WHERE ((purchase.distributor = 1) AND (purchaseItems.complete IS NULL))')
 	orders = curs.fetchall()
 	return orders
 
 # Returns all active orders made by a student
 def getUsersOrders(conn, bnum):
 	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-	curs.execute('SELECT * from purchaseItems INNER JOIN purchase on (purchaseItems.pid = purchase.pid) WHERE purchase.student = %s and purchase.complete is NULL', [bnum])
+	curs.execute('SELECT * from purchaseItems INNER JOIN purchase on (purchaseItems.pid = purchase.pid) WHERE purchase.student = %s and purchase.complete is NULL', [bnum,])
 	orders = curs.fetchall()
 	return orders
 
-# Returns all active orders for a given distributor (lookup by id)
-def markAsComplete(conn, pid):
+# Updates a menu item of a purchase to be complete 
+# The purchase that the menu is a part of may not yet be complete
+def markItemAsComplete(conn, pid, mid):
 	curs = conn.cursor(MySQLdb.cursors.DictCursor)
-	curs.execute('UPDATE purchase SET complete = 1 WHERE pid = %s',[pid])
+	curs.execute('UPDATE purchaseItems SET complete = 1 WHERE ((pid = %s) AND (mid = %s))',[pid, mid])
 	return
+
+# Updates a purchase as complete 
+def markPurchaseAsComplete(conn, pid):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor) 
+	curs.execute('UPDATE purchase SET complete = 1 WHERE pid = %s', [pid,])
+	return
+
+# Checks whether all items in an order are complete after a menu item 
+# was marked as complete - updates if appropriate 
+def getIncompletePurchases(conn, pid):
+	curs = conn.cursor(MySQLdb.cursors.DictCursor)
+	curs.execute('SELECT * FROM purchaseItems WHERE ((pid = %s) AND (complete IS NULL))', [pid,])
+	incomplete = curs.fetchall()
+	return incomplete
 
 # Creates a new order
 def addPurchase(conn, id, notes):

@@ -19,7 +19,7 @@ Html template for the order confirmation page -->
               <form data-mid=1 action="{{url_for('admin')}}" method=post>
                 <input type="hidden" name="pid" value="{{item['pid']}}">
                 <input type="hidden" name="mid" value="{{item['mid']}}">
-                <input type="submit" name="submit" value="markAsComplete">
+                <input onclick='return confirm("Are you sure you would like to mark this item as complete?");' type="submit" name="submit" value="Mark As Complete">
               </form>
             </td>
       </tr>

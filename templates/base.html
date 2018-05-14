@@ -7,26 +7,36 @@ Base html template for the web application -->
 <!doctype HTML>
 <head>
 	<meta charset="utf-8">
-	<title>CS304 hwk6</title>
+	<title>On the Go</title>
 	<style>
 		H1 {
 		    color: teal;
 		    font-size: 200%;
 				text-align: center;
 		}
+
+		table {
+						border-collapse: collapse;
+		}
+
+		tr {
+				border: 2px solid teal;
+				padding: 2ex;
+		}
+
 		form {
 		    display: inline-block;
-		    border: 2px solid teal;
+		    /* border: 2px solid teal; */
 		    padding: 2ex;
-		    border-radius: 2ex;
+		    /* border-radius: 2ex; */
 		}
 
 		[type=submit] {
-		    font-size: 1em;
+		    /* font-size: 0.9em;
 		    font-weight: normal;
 		    border: 1px solid teal;
-		    border-radius: 0.5em;
-		    background-color: #d0FFFF;
+		    border-radius: 0.3em; */
+		    background-color: #c6ecd6;
 		}
 
 		fieldset {
@@ -75,23 +85,7 @@ Base html template for the web application -->
 		    background-color: #111;
 		}
 		.selected { font-weight: bold; }
-    table {
-            border-collapse: collapse;
-    }
-    tr {
-        border: 2px solid teal;
-        padding: 2ex;
-    }
-    form {
-       display: inline-block;
-       border: 1px solid teal;
-       padding: 1ex;
-       border-radius: 2ex;
-    }
-    [type=submit] {
-         font-size: 1em;
-         font-weight: normal;
-    }
+
 	</style>
 	<link rel="stylesheet" type="text/css"
           href="/static/styling.css">
@@ -107,22 +101,20 @@ Base html template for the web application -->
 		{% endif %}
 
 		{% if session['logged_in'] %}
-		<li class="navli"><a href="{{url_for('order')}}">Order Now</a></li>
-		<li class="navli"><a href="{{url_for('account')}}">Your Account & Orders</a></li>
-		{% endif %}
+			<li class="navli"><a href="{{url_for('order')}}">Order Now</a></li>
+			<li class="navli"><a href="{{url_for('account')}}">Your Account & Orders</a></li>
 
-		{% if session['logged_in'] %}
-		{% with admin = session['admin'] %}
-		{% if admin != 0 %}
-		<li class="navli"><a href="{{url_for('admin')}}">Admin Only</a></li>
-		{% endif %}
-		{% endwith %}
-		{% endif %}
+			{% with admin = session['admin'] %}
+				{% if admin != 0 %}
+					<li class="navli"><a href="{{url_for('admin')}}">Admin Only</a></li>
+				{% endif %}
+			{% endwith %}
 
-		{% if session['logged_in'] %}
-		{% with user = session['username'] %}
-			<li class="userli">Logged in as {{user}}</li>
-		{% endwith %}
+			<li class="navli"><a onclick='return confirm("Are you sure you would like to logout?");' href="{{url_for('logout')}}">Logout</a></li>
+
+			{% with user = session['username'] %}
+				<li class="userli">Logged in as {{user}}</li>
+			{% endwith %}
 		{% endif %}
 	</ul>
 

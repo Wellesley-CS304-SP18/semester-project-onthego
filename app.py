@@ -99,7 +99,6 @@ def join():
 
         # password is valid
         hashed = bcrypt.hashpw(newPassword.encode('utf-8'), bcrypt.gensalt())
-
         conn = dbconn2.connect(dsn)
 
         # if the username is already taken, redirect to join page
@@ -113,23 +112,45 @@ def join():
         if row is not None:
             flash ("Error: An account already exists for the B-number you entered.")
             return redirect(url_for('join'))
+	
+	# check that bnum does not begin with a 'B' or 'b' by confirming
+	# that every value in the string is numeric with the .isnumeric() method
+	# for unicode - cast bNum as string, then convert to unicode for check
+	uniBnum = unicode(str(bNum), 'utf-8') 
+	if (not uniBnum.isnumeric()): 
+            flash("Error: Your B-number should not include any non-numeric characters. Do not include a B or b at the beginning. Please try again with a valid B-number.")
+	    return redirect(url_for('join'))
+	elif (len(str(bNum)) != 8):
+            flash("Error: Your B-number should only be 8 digits long. Please try again with a valid B-number.")
+	    return redirect(url_for('join'))
 
         # Neither the username nor the B-number have been used already:
         # Now check admin privilege (if applicable)
-
         if org != "Choose One":
         	# the user has identified themselves as an admin
             # org, adminUser, adminPass to verify - org value is
             conn = dbconn2.connect(dsn)
-            hashedAdmin = bcrypt.hashpw(adminPass.encode('utf-8'), bcrypt.gensalt())
-            adminOrg = auth.checkAdmin(adminUser, hashedAdmin, conn)
+            # the admin password stored in the table must be extracted before the 
+	    # checkAdmin method can be used so that the salt used to hash the admin password, 
+	    # which is extracted from the password by the hashpw method, can be used to hash
+	    # the admin password entered for comparison; if salt is different, comparison 
+	    # in the checkAdmin method will fail: 
+            tblPassword = auth.getPassword(adminUser, conn)
+	    # extract the password from the dictionary object returned by the query
+	    tblHashed = tblPassword['password']
+	    hashedAdmin = bcrypt.hashpw(adminPass.encode('utf-8'), tblHashed.encode('utf-8'))
+	    tblAdmin = auth.checkAdmin(adminUser, hashedAdmin, conn)
+	    # extract the admin org # from the dictionary object returned by the query
+	    adminOrg = tblAdmin['admin']
             if adminOrg is None:
                 flash("Error: No such administrator exists. Please try again.")
                 return redirect(url_for('join'))
-            elif adminOrg != org:
+	    # Cast unicode 'org' as an int for comparison to the 'long' value 
+	    # from the database query 'checkAdmin'
+            elif adminOrg != int(org):
                 flash("Error: Administrator's organization does not match the organization you selected. Please try again.")
                 return redirect(url_for('join'))
-            elif adminOrg == org:
+            elif adminOrg == int(org):
             	conn = dbconn2.connect(dsn)
                 auth.createUserAdmin(bNum, name, newUsername, hashed, org, conn)
                 # add bnum, username, admin and login status to the session
@@ -159,8 +180,8 @@ def join():
         return render_template('join.html', title="Welcome to On-the-Go!", script=url_for('join'), orgs = orgs)
 
 # route for the account page
-# this page shows current unfilled orders and the logout button
-@app.route('/account/', methods=["GET", "POST"])
+# this page shows current unfilled orders
+@app.route('/account/', methods=["GET"])
 def account():
 	if (request.method == "GET"):
 		# GET request: the user is just looking at their orders
@@ -184,23 +205,6 @@ def account():
 			times[item['pid']] = functions.getTime(conn, item['pid'])
 
 		return render_template('account.html', title="Your Account", orders=orders, names=names, times=times)
-	else:
-		if ('submit' in request.form): # if the user clicks the logout button
-			action = request.form['submit']
-			if (action == 'logout' and 'username' in session):
-				# pop everything from the session
-				session.pop('username')
-				session.pop('logged_in')
-				session.pop('bnum')
-				if 'admin' in session:
-					session.pop('admin')
-				if 'cart' in session:
-					session.pop('cart')
-				if 'cost' in session:
-					session.pop('cost')
-				flash("You are now logged out!")
-				return redirect(url_for('home')) # go back to the home page
-			return render_template('home.html', title="On the Go")
 
 # route for students who are also admins to select role
 @app.route('/admin/', methods=['POST', 'GET'])
@@ -228,8 +232,17 @@ def admin():
 			return redirect(url_for('login'))
 	else: # if the user clicks the markAsComplete button
 		conn = dbconn2.connect(dsn)
+		# get purchase and menu id for the item whose 'mark as complete'
+		# submit button was clicked
 		pid = request.form['pid']
-		functions.markAsComplete(conn, pid) # mark the order as complete
+		mid = request.form['mid']
+		functions.markItemAsComplete(conn, pid, mid) # mark item in an order as complete
+		# check whether all items in an order have been marked as complete
+		incompletes = functions.getIncompletePurchases(conn, pid) 
+		# if no incomplete purchase items exist, mark purchase as complete
+		if len(incompletes) == 0: 
+                    functions.markPurchaseAsComplete(conn, pid)
+
 		orders = functions.getActiveOrders(conn) # get the new list of current orders
 		names = {}
 		times = {}
@@ -268,66 +281,35 @@ def order():
 		results = functions.getMenu(conn)
 		return render_template('order.html', title = "Order Now", menu = results, cart=cart, price = cost)
 	else: # if the user clicks a button
-		action = request.form['submit']
-		if action == 'submitCart': # if the user adds an item to the cart
-		# 	quantity = request.form['item-quantity']
-		# 	itemName = request.form['menu_name']
-		# 	itemMid = request.form['menu_mid']
-		#
-		# 	for item in cart:
-		# 		mid = int(item['mid'])
-		# 		itemMid = int(itemMid)
-		# 		if mid == itemMid:
-		# 			item['quantity'] = quantity
-		#
-		#
-		# 	conn = dbconn2.connect(dsn)
-		#
-		# 	# calculate the cost of the cart
-		# 	cost = 0
-		# 	for item in cart:
-		# 		if (item['quantity'] != 0):
-		# 			name = item['name']
-		# 			q = item['quantity']
-		# 			price = functions.getPrice(conn, name) # get price
-		# 			price = price['price']
-		# 			price = Decimal(price)
-		# 			q = Decimal(q)
-		# 			cost += q * price # multiply price and quantity
-		#
-		# 	flash('You added ' + quantity + ' of '+ itemName + ' to your cart.')
-		# 	session['cart'] = cart # set the cart
-		# 	session['cost'] = cost # set the cost
-		# 	return render_template('order.html', title = "Order Now", menu = results, cart=cart, price =cost)
-		# else: # if the user clicks the submit order button
-		# check if the cart isn't empty
-			isFull = False
+		# action = request.form['submit']
+		# if action == 'submitCart':
+		isFull = False
+		for thing in cart:
+			if (thing['quantity'] != 0):
+				isFull = True
+
+		if (isFull): # if it isn't empty
+			conn = dbconn2.connect(dsn)
+			notes = request.form['comment']
+
+			id = session['bnum']
+			functions.addPurchase(conn, id, notes) # record the purchase in the database
+			pid = functions.getPurchaseID(conn)
+			pid_final=pid['LargestPid']
+
+			# add each of the items in the cart to the database
 			for thing in cart:
 				if (thing['quantity'] != 0):
-					isFull = True
-
-			if (isFull): # if it isn't empty
-				conn = dbconn2.connect(dsn)
-				notes = request.form['comment']
-
-				id = session['bnum']
-				functions.addPurchase(conn, id, notes) # record the purchase in the database
-				pid = functions.getPurchaseID(conn)
-				pid_final=pid['LargestPid']
-
-				# add each of the items in the cart to the database
-				for thing in cart:
-					if (thing['quantity'] != 0):
-						mid = thing['mid']
-						quantity = thing['quantity']
-						functions.addPurchaseItems(conn, pid_final, mid, quantity)
-				flash('Thank you for ordering!')
-				session.pop('cart') # reset the cart and cost
-				session.pop('cost')
-				return redirect(url_for('account'))
-			else: # if the cart is empty when the user submits it
-				flash('PLEASE SELECT ITEMS BEFORE ORDERING')
-				return render_template('order.html', title = "Order Now", menu = results, cart=cart, price =cost)
+					mid = thing['mid']
+					quantity = thing['quantity']
+					functions.addPurchaseItems(conn, pid_final, mid, quantity)
+			flash('Thank you for ordering!')
+			session.pop('cart') # reset the cart and cost
+			session.pop('cost')
+			return redirect(url_for('account'))
+		else: # if the cart is empty when the user submits it
+			flash('Please select items before submitting an order.')
+			return render_template('order.html', title = "Order Now", menu = results, cart=cart, price =cost)
 
 # route for ajax method to set ratings
 @app.route('/orderAjax/', methods=['POST', 'GET'])
@@ -369,12 +351,25 @@ def orderAjax():
 			q = Decimal(q)
 			cost += q * price # multiply price and quantity
 
-	# flash('You added ' + quantity + ' of '+ itemName + ' to your cart.')
 	session['cart'] = cart # set the cart
 	session['cost'] = cost # set the cost
 
 	# return json file with tt and the movie's average rating
 	return jsonify({"quantity": quantity, "name":itemName, "cost":cost, "mid":itemMid})
+
+@app.route('/logout/')
+def logout():
+	session.pop('username')
+	session.pop('logged_in')
+	session.pop('bnum')
+	if 'admin' in session:
+		session.pop('admin')
+	if 'cart' in session:
+		session.pop('cart')
+	if 'cost' in session:
+		session.pop('cost')
+	flash("You are now logged out!")
+	return redirect(url_for('home'))
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:

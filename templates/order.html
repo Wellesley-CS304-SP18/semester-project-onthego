@@ -16,14 +16,14 @@ Html template for the order page -->
           <td>{{item['description']}}</td>
           <td>
             <form data-mid=1 action="{{url_for('order')}}" method=post>
-              <input type="hidden" name="menu_mid" value="{{item['mid']}}">
+              <input type="hidden" class="hidden_mid" name="menu_mid" value="{{item['mid']}}">
               <input type="hidden" name="menu_name" value="{{item['name']}}">
               {% if cart %}
-              <input type="number" id="{{item['mid']}}" class="menu" name="item-quantity" style="text-align:center; max-width:50px;" MIN="0" value="{{cart[count]['quantity']}}">
+              <input oninput="validity.valid||(value='');" type="number" id="{{item['mid']}}" class="menu" name="item-quantity" style="text-align:center; max-width:50px;" MIN="0" value="{{cart[count]['quantity']}}">
               <!-- <input type="submit" name="submit" value="addToCart"> -->
               {% endif %}
               {% if not cart %}
-              <input type="number" id="{{item['mid']}}" class="menu" name="item-quantity" style="text-align:center; max-width:50px;" MIN="0" value="0">
+              <input oninput="validity.valid||(value='');" type="number" id="{{item['mid']}}" class="menu" name="item-quantity" style="text-align:center; max-width:50px;" MIN="0" value="0">
               <!-- <input type="submit" name="submit" value="addToCart"> -->
               {% endif %}
             </form>
@@ -41,15 +41,25 @@ Html template for the order page -->
   </ul>
   <p id="cost">Total cost: {{price}}</p>
 
-  <p>WHEN YOU ARE DONE WITH YOUR CART, please enter any allergies or modifications for your order here, if you have any:</p>
+  <p>If you have any allergies or any modifications you'd like, please enter them here once you are done adding items to your cart:</p>
   <form method=post action="">
     <textarea name="comment"></textarea>
-    <input type=submit name=submit value="submitCart">
+    <input onclick='return confirm("Are you sure you would like to order?");' type="submit" name="submit" value="Submit Cart"></input>
   </form>
+
 
   <script>
 
-    // $("li:contains('0')").css("display", "none");
+    $(document).ready(function() {
+      $(window).keydown(function(event){
+        if(event.keyCode == 13) {
+          event.preventDefault();
+          return false;
+        }
+      });
+    });
+
+    $("li:contains('0')").hide();
 
     // update the cart in the html
     function updateCart(data){
@@ -62,6 +72,14 @@ Html template for the order page -->
     }
 
     $("input").on("change", function() {
+      var mid = $(this).parent().find('.hidden_mid').val();
+      var quantity = $(this).val();
+      if (quantity === '0') {
+        $('#' + mid + '.list').hide();
+      } else {
+        $('#' + mid + '.list').show();
+      }
+
       formData = $(this).parent().serialize();
       $.post("/orderAjax/", // post to setRatingAjax
       formData,
